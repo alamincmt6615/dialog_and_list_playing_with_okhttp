@@ -21,7 +21,6 @@ public class AddressHelperModel {
                 jsonObject.optString("buildingName",""),
                 jsonObject.optString("thoroughfare",""),
                 jsonObject.optString("dependentThoroughfare","")
-
         );
     }
 }

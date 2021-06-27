@@ -22,7 +22,7 @@ public class AddressApi extends AsyncTask<String, Void, ArrayList<AddressHelperM
         return getHouseByZip(str);
     }
     public  ArrayList<AddressHelperModel> getHouseByZip(String str){
-        Log.d("mmmm", "getZipSuggestion: "+str);
+        Log.d("aaaaaa", "zip: "+str);
         OkHttpClient client = new OkHttpClient();
         ArrayList<AddressHelperModel> houseList  = new ArrayList<>();
         Request request = new Request.Builder()
@@ -33,7 +33,7 @@ public class AddressApi extends AsyncTask<String, Void, ArrayList<AddressHelperM
         Response response = null;
         try{
             response = client.newCall(request).execute();
-            Log.d("mmmm", "getZipSuggestion: "+response.code());
+            Log.d("aaaaaaaaa", "zip: "+response.code());
             if(response.code()==200){
                 String jsonData = response.body().string();
                 JSONArray jsonArray = new JSONArray(jsonData);
@@ -43,7 +43,7 @@ public class AddressApi extends AsyncTask<String, Void, ArrayList<AddressHelperM
                 }
             }
         }catch (Exception e){
-            Log.e("mmmmm", "getZipSuggestion: "+e );
+            Log.e("aaaaaa", "getZipSuggestion: "+e );
             e.printStackTrace();
         }
         this.houseList = houseList;

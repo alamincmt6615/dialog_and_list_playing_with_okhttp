@@ -18,6 +18,7 @@ public class ZipCodeHelper extends AsyncTask<String, Void, ArrayList> {
     static ArrayList zipCodeList = new ArrayList();
     ZipCallBack callBack;
     String str;
+    public static Boolean isDataLoad=false;
     public ZipCodeHelper(Context context, String str, ZipCallBack callBack){
         this.context = context;
         this.str = str;
@@ -29,18 +30,18 @@ public class ZipCodeHelper extends AsyncTask<String, Void, ArrayList> {
         return getZipSuggestion(context,str);
     }
     public static  ArrayList getZipSuggestion(Context context, String str){
-        Log.d("mmmm", "getZipSuggestion: "+str);
+        Log.d("aaaaaa", "zip: "+str);
         OkHttpClient client = new OkHttpClient();
         ArrayList<String> zipList  = new ArrayList<>();
         Request request = new Request.Builder()
-                .url("https://labapi.yuma-technology.co.uk:8443/delivery/connector/postal_code/"+str)
+                .url("https://labapi.yuma-technology.co.uk:8443/delivery/connector/postal_code/"+"LU3")
                 .addHeader("Content-Type","application/json")
                 .addHeader("AdminSession","03683bdc-00a1-4d6d-b344-c70d937f7168")
                 .build();
         Response response = null;
         try{
             response = client.newCall(request).execute();
-            Log.d("mmmm", "getZipSuggestion: "+response.code());
+            Log.d("aaaaaaaaa", "ZIP "+response.code());
             if(response.code()==200){
                 String jsonData = response.body().string();
                 JSONArray jsonArray = new JSONArray(jsonData);
@@ -49,10 +50,12 @@ public class ZipCodeHelper extends AsyncTask<String, Void, ArrayList> {
                 }
             }
         }catch (Exception e){
-            Log.e("mmmmm", "getZipSuggestion: "+e );
+            Log.e("AAAAAAAAAAAAA", "ERROR : "+e );
             e.printStackTrace();
         }
         zipCodeList = zipList;
+        if (zipCodeList.size()>0)
+            isDataLoad = true;
         return zipCodeList;
     }
 
