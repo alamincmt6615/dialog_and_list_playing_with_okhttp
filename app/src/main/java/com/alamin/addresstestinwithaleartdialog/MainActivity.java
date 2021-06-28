@@ -28,6 +28,8 @@ import android.widget.Toast;
 import com.evgenii.jsevaluator.JsEvaluator;
 import com.evgenii.jsevaluator.interfaces.JsCallback;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import static com.alamin.addresstestinwithaleartdialog.ZipCodeHelper.isDataLoad;
@@ -44,39 +46,32 @@ public class MainActivity extends AppCompatActivity implements ZipCallBack, Adap
     public Spinner addressSelect;
     TextView customer_info;
     private PostalCodeListAdapter postalCodeListAdapter;
+    AutoCompleteTextView d_zip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         jsEvaluator = new JsEvaluator(MainActivity.this);
-        city = findViewById(R.id.customerInputCity);
-        zip = findViewById(R.id.customerInputZip);
-        street = findViewById(R.id.customerInputStreet);
-        houseNumber = findViewById(R.id.customerInputCountry);
-        addressSelect = findViewById(R.id.addressSelect);
-        addressSearch = findViewById(R.id.addressSearch);
+
         customer_info = findViewById(R.id.customer_info);
         customer_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OpenDialog();
-
             }
         });
 
-        arrayAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_dropdown_item_1line, zipList);
+      /*  arrayAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_dropdown_item_1line, zipList);
         zip.setAdapter(arrayAdapter);
         zip.setOnItemClickListener(this);
-        zip.setThreshold(1);
-
+        zip.setThreshold(1);*/
        /* addressSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadHouse();
             }
         });*/
-
         /*zip.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -112,32 +107,33 @@ public class MainActivity extends AppCompatActivity implements ZipCallBack, Adap
 Log.d("nothid select","vaia");
             }
         });*/
-
-
-
     }
-
     public void OpenDialog()
     {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView= inflater.inflate(R.layout.customer_dialog_info, null);
+
+
         dialogBuilder.setView(dialogView);
 
-        AutoCompleteTextView d_zip =(AutoCompleteTextView)dialogView.findViewById(R.id.d_customerInputZip);
+        d_zip =(AutoCompleteTextView)dialogView.findViewById(R.id.d_customerInputZip);
+        city = dialogView.findViewById(R.id.customerInputCity);
+        zip = dialogView.findViewById(R.id.customerInputZip);
+        street = dialogView.findViewById(R.id.customerInputStreet);
+        houseNumber = dialogView.findViewById(R.id.customerInputCountry);
+        addressSelect = dialogView.findViewById(R.id.addressSelect);
+        addressSearch = dialogView.findViewById(R.id.addressSearch);
         Button button = (Button)dialogView.findViewById(R.id.customerSave);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Toast.makeText(MainActivity.this, "alamin", Toast.LENGTH_SHORT).show();
-
             }
         });
         arrayAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_dropdown_item_1line, zipList);
-        d_zip.setAdapter(postalCodeListAdapter);
+        d_zip.setAdapter(arrayAdapter);
         d_zip.setOnItemClickListener(this);
         d_zip.setThreshold(1);
         d_zip.addTextChangedListener(new TextWatcher() {
@@ -145,35 +141,19 @@ Log.d("nothid select","vaia");
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 if(s.length()==3 && !preStr.equals(s.toString())){
                     preStr = s.toString();
                     loadData(s.toString());
-                    //callFormatPostalCode(s.toString());
-                    if (isDataLoad) {
-                       // arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, zipList);
-                       // d_zip.setAdapter(arrayAdapter);
-                    }
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d("aaaaaaaaaa", "afterTextChanged: called");
             }
         });
-
-        if (isDataLoad) {
-            d_zip.setAdapter(postalCodeListAdapter);
-            //arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, zipList);
-            //d_zip.setAdapter(arrayAdapter);
-        }
-
         dialogBuilder.create().show();
-
       /*
         final Dialog dialog = new Dialog(getApplicationContext());
         dialog.setContentView(R.layout.customer_dialog_info);
@@ -234,8 +214,7 @@ Log.d("nothid select","vaia");
 
     private void loadHouse(){
         Log.d("ppppp", "loadHouse: calling");
-        new AddressApi(zip.getText().toString(),this).execute();
-
+        new AddressApi(d_zip.getText().toString(),this).execute();
     }
 
     void callFormatPostalCode(String str){ jsEvaluator.callFunction("function myFunction(a) { return a.replace(/(\\S*)\\s*(\\d)/, \"$1 $2\"); }",
@@ -249,10 +228,7 @@ Log.d("nothid select","vaia");
                         else{
                             //loadData(zip.getText().toString());
                             loadData(abc);
-
                         }
-
-
                     }
                     @Override
                     public void onError(String s) {
@@ -264,17 +240,15 @@ Log.d("nothid select","vaia");
     }
 
     void loadData(String str){
-        new ZipCodeHelper(MainActivity.this,str, (ZipCallBack) this).execute();;
+        new ZipCodeHelper(MainActivity.this,str, (ZipCallBack) this).execute();
     }
     @Override
-    public void onResponseFromServer(ArrayList<String> str) {
+    public void onResponseFromServer(@NotNull ArrayList<String> str) {
         if(str.size() != 0){
             zipList = str;
         }
-        postalCodeListAdapter = new PostalCodeListAdapter(MainActivity.this,R.layout.postalcode_item,zipList);
-
-       /* arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, zipList);
-        zip.setAdapter(arrayAdapter);*/
+        arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, zipList);
+        d_zip.setAdapter(arrayAdapter);
     }
     @Override
     public void onAddressResponse(ArrayList<AddressHelperModel> data) {
@@ -287,14 +261,13 @@ Log.d("nothid select","vaia");
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     AddressHelperModel model =  houseList.get(position);
-                    if (model !=null) {
+                    if (model !=null){
                         if (model.streetName1 != null && model.streetName2 != null)
                             street.setText(model.streetName1 + " " + model.streetName2);
-                        city.setText(model.town);
-                        houseNumber.setText(model.buildingNumber);
+                            city.setText(model.town);
+                            houseNumber.setText(model.buildingNumber);
+                        }
                     }
-                }
-
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
@@ -303,12 +276,10 @@ Log.d("nothid select","vaia");
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         loadHouse();
-        //Toast.makeText(this, "alamin "+position, Toast.LENGTH_SHORT).show();
     }
 }
